@@ -1,13 +1,13 @@
 <?php
 /**
- * @version    CVS: 1.0.1
- * @package    Com_Biemembership
+ * @version    CVS: 1.0.3
+ * @package    Com_Bieapilogin
  * @author     Tasos Triantis <tasos.tr@gmail.com>
  * @copyright  2025 Tasos Triantis
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Biemembership\Component\Biemembership\Administrator\Model;
+namespace Bieapilogin\Component\Bieapilogin\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
@@ -18,14 +18,14 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
-use Biemembership\Component\Biemembership\Administrator\Helper\BiemembershipHelper;
+use Bieapilogin\Component\Bieapilogin\Administrator\Helper\BieapiloginHelper;
 
 /**
- * Methods supporting a list of Delegates records.
+ * Methods supporting a list of Tokens records.
  *
- * @since  1.0.1
+ * @since  1.0.3
  */
-class DelegatesModel extends ListModel
+class TokensModel extends ListModel
 {
 	/**
 	* Constructor.
@@ -45,6 +45,8 @@ class DelegatesModel extends ListModel
 				'ordering', 'a.ordering',
 				'created_by', 'a.created_by',
 				'modified_by', 'a.modified_by',
+				'token', 'a.token',
+				'device', 'a.device',
 			);
 		}
 
@@ -73,7 +75,7 @@ class DelegatesModel extends ListModel
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// List state information.
-		parent::populateState('id', 'ASC');
+		parent::populateState("a.id", "ASC");
 
 		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $context);
@@ -102,7 +104,7 @@ class DelegatesModel extends ListModel
 	 *
 	 * @return  string A store id.
 	 *
-	 * @since   1.0.1
+	 * @since   1.0.3
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -120,51 +122,72 @@ class DelegatesModel extends ListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since   1.0.1
+	 * @since   1.0.3
 	 */
 	protected function getListQuery()
 	{
 		// Create a new query object.
-		$db    = $this->getDatabase();
+		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
-        $fields = [
-            'm.start_date',
-            'm.end_date',
-            'm.status_id',
-        ];
-        $query->select('a.*');
-        $query->select($db->quoteName($fields));
-		$query->from('`civicrm_contact` AS a');
+		$query->select(
+			$this->getState(
+				'list.select', 'DISTINCT a.*'
+			)
+		);
+		$query->from('`#__bieapilogin_tokens` AS a');
+		
+		// Join over the users for the checked out user
+		$query->select("uc.name AS uEditor");
+		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
 
-		$query->join("INNER", "civicrm_membership AS m ON m.contact_id = a.id");
-		$query->join('LEFT', 'civicrm_value_contacts_2 AS `ord` ON (`a`.`id` = `ord`.`entity_id`)');
+		// Join over the user field 'created_by'
+		$query->select('`created_by`.name AS `created_by`');
+		$query->join('LEFT', '#__users AS `created_by` ON `created_by`.id = a.`created_by`');
 
-        $query->where(' a.contact_type = ' . $db->quote('Individual'));
-        $query->where(' m.membership_type_id = ' . $db->quote(2));
+		// Join over the user field 'modified_by'
+		$query->select('`modified_by`.name AS `modified_by`');
+		$query->join('LEFT', '#__users AS `modified_by` ON `modified_by`.id = a.`modified_by`');
+		
 
-        $filter_active = $this->state->get("filter.active");
-        if ($filter_active)
-        {
-            $query->where('m.status_id = '. $db->quote(2));
-        }
-        $filter_employer = $this->state->get("filter.employer_id");
-        if ($filter_employer)
-        {
-            $query->where('a.employer_id = '. $db->quote($filter_employer));
-        }
+		// Filter by published state
+		$published = $this->getState('filter.state');
 
+		if (is_numeric($published))
+		{
+			$query->where('a.state = ' . (int) $published);
+		}
+		elseif (empty($published))
+		{
+			$query->where('(a.state IN (0, 1))');
+		}
 
-        // Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering', 'id');
-		$orderDirn = $this->state->get('list.direction', 'ASC');
+		// Filter by search in title
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('a.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->Quote('%' . $db->escape($search, true) . '%');
+				
+			}
+		}
+		
+		// Add the list ordering clause.
+		$orderCol  = $this->state->get('list.ordering', "a.id");
+		$orderDirn = $this->state->get('list.direction', "ASC");
 
 		if ($orderCol && $orderDirn)
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
-        //Factory::getApplication()->enqueueMessage($db->replacePrefix((string) $query), 'notice');
+
 		return $query;
 	}
 
@@ -176,36 +199,8 @@ class DelegatesModel extends ListModel
 	public function getItems()
 	{
 		$items = parent::getItems();
-        foreach ($items as $item) {
-            $item->active  = $item->status_id == 2;
-            $item->member_state = $this->getMemberState($item->employer_id);
-        }
+		
+
 		return $items;
 	}
-
-
-    public function getTotals() {
-        $query = $this->getListQuery();
-        $db = Factory::getContainer()->get('DatabaseDriver');
-        $db->setQuery($query);
-        $items = $db->loadObjectList();
-        return count($items);
-    }
-
-    private function getMemberState(int $contact_id) : array {
-        if ((int) $contact_id == 0) {
-            return [];
-        }
-
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
-        $query->select($db->quoteName('v.organization_name_en_1', 'orgname_en'));
-        $query->select($db->quoteName('v.organization_name_fr_2', 'orgname_fr'));
-        $query->select($db->quoteName('v.username_code_3', 'uname_code'));
-        $query->from('`civicrm_contact` AS c');
-        $query->join('LEFT', 'civicrm_value_organisaztion_name_en_1 AS `v` ON (`c`.`id` = `v`.`entity_id`)');
-        $query->where(' c.id = ' . $db->quote($contact_id));
-        $db->setQuery($query);
-        return $db->loadAssoc();
-    }
 }

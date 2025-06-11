@@ -44,8 +44,8 @@ class CurrentsController extends ApiController
         $apiFilterInfo = $this->input->get('filter', [], 'array');
         $filter        = InputFilter::getInstance();
 
-        if (\array_key_exists('author', $apiFilterInfo)) {
-            $this->modelState->set('filter.author_id', $filter->clean($apiFilterInfo['author'], 'INT'));
+        if (\array_key_exists('employer_id', $apiFilterInfo)) {
+            $this->modelState->set('filter.employer_id', $filter->clean($apiFilterInfo['employer_id'], 'INT'));
         }
 
         $this->modelState->set('filter.active', '1');

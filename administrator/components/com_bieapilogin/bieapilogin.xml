@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+    <name>com_bieapilogin</name>
+    <creationDate>2025-06-05</creationDate>
+    <copyright>2025 Tasos Triantis</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Tasos Triantis</author>
+    <authorEmail>tasos.tr@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>CVS: 1.0.3</version>
+    <description></description>
+    <namespace path="src">Bieapilogin\Component\Bieapilogin</namespace>
+    
+    <scriptfile>script.php</scriptfile>
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    
+
+    <files folder="site">
+        <folder>src</folder>
+        
+        <folder>tmpl</folder>
+    </files>
+    <media destination="com_bieapilogin" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+    <languages folder="site/languages">
+        
+			<language tag="en-GB">en-GB/com_bieapilogin.ini</language>
+    </languages>
+    <administration>
+        <menu>COM_BIEAPILOGIN</menu>
+        <submenu>
+            
+			<menu link="option=com_bieapilogin&amp;view=apiloginlogs" view="apiloginlogs" alt="Bieapilogin/Apiloginlogs">COM_BIEAPILOGIN_TITLE_APILOGINLOGS</menu>
+
+			<menu link="option=com_bieapilogin&amp;view=tokens" view="tokens" alt="Bieapilogin/Tokens">COM_BIEAPILOGIN_TITLE_TOKENS</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>presets</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/com_bieapilogin.ini</language>
+			<language tag="en-GB">en-GB/com_bieapilogin.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+    </plugins>
+    
+
+    <updateservers>
+        <server type="extension" priority="1" name="com_bieapilogin">https://nocdn.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NDU0MzUtMjE1NDQz</server>
+    </updateservers>
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->

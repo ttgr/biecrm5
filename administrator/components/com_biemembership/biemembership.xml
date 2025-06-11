@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+    <name>com_biemembership</name>
+    <creationDate>2025-06-11</creationDate>
+    <copyright>2025 Tasos Triantis</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Tasos Triantis</author>
+    <authorEmail>tasos.tr@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>CVS: 1.0.1</version>
+    <description></description>
+    <namespace path="src">Biemembership\Component\Biemembership</namespace>
+    
+    <scriptfile>script.php</scriptfile>
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <api>
+		<files folder="webservices">
+			<folder>src</folder>
+		</files>
+	</api>
+
+    <media destination="com_biemembership" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+    <administration>
+        <menu>COM_BIEMEMBERSHIP</menu>
+        <submenu>
+            
+			<menu link="option=com_biemembership&amp;view=delegates" view="delegates" alt="Biemembership/Delegates">COM_BIEMEMBERSHIP_TITLE_DELEGATES</menu>
+
+			<menu link="option=com_biemembership&amp;view=memberstates" view="memberstates" alt="Biemembership/Memberstates">COM_BIEMEMBERSHIP_TITLE_MEMBERSTATES</menu>
+
+			<menu link="option=com_biemembership&amp;view=membershipdashboards" view="membershipdashboards" alt="Biemembership/Membershipdashboards">COM_BIEMEMBERSHIP_TITLE_MEMBERSHIPDASHBOARDS</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>presets</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/com_biemembership.ini</language>
+			<language tag="en-GB">en-GB/com_biemembership.sys.ini</language>
+			<language tag="fr-FR">fr-FR/com_biemembership.ini</language>
+			<language tag="fr-FR">fr-FR/com_biemembership.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+		<plugin group="webservices" plugin="biemembership"/>
+		<plugin group="webservices" plugin="biemembership"/>
+		<plugin group="webservices" plugin="biemembership"/>
+    </plugins>
+    
+
+    <updateservers>
+        <server type="extension" priority="1" name="com_biemembership">https://nocdn.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NDU0MzUtMjE1NDc5</server>
+    </updateservers>
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->
