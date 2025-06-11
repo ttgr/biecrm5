@@ -10,7 +10,9 @@ namespace Biemembership\Component\Biemembership\Api\Controller;
 
 \defined('_JEXEC') or die;
 
+use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\MVC\Controller\ApiController;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * The Delegates controller
@@ -34,4 +36,26 @@ class DelegatesController extends ApiController
 	 * @since  1.0.1
 	 */
 	protected $default_view = 'delegates';
+
+    public function displayList()
+    {
+        $apiFilterInfo = $this->input->get('filter', [], 'array');
+        $filter        = InputFilter::getInstance();
+
+        if (\array_key_exists('employer_id', $apiFilterInfo)) {
+            $this->modelState->set('filter.employer_id', $filter->clean($apiFilterInfo['employer_id'], 'INT'));
+        }
+
+        $this->modelState->set('filter.active', '1');
+
+        $currentUrl           = Uri::getInstance();
+        $itemsDefaultOrdering = ['ordering' => 'id', 'direction' => 'ASC'];
+        $itemsOrderingQuery   = $currentUrl->getVar('page', $itemsDefaultOrdering);
+
+        $this->modelState->set('list.ordering', $itemsOrderingQuery['ordering']);
+        $this->modelState->set('list.direction', $itemsOrderingQuery['direction']);
+
+        return parent::displayList();
+    }
+
 }
