@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="plugin" group="webservices">
+    <name>plg_webservices_biemembership</name>
+    <author>Tasos Triantis</author>
+    <creationDate>2025-06-11</creationDate>
+    <copyright>2025 Tasos Triantis</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>tasos.tr@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>CVS: 1.0.1</version>
+    <description>PLG_WEBSERVICES_COM_BIEMEMBERSHIP_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="biemembership">biemembership.php</filename>
+        <filename>index.html</filename>
+    </files>
+    <languages folder="languages">
+        
+			<language tag="en-GB">en-GB/plg_webservices_biemembership.ini</language>
+			<language tag="en-GB">en-GB/plg_webservices_biemembership.sys.ini</language>
+			<language tag="fr-FR">fr-FR/plg_webservices_biemembership.ini</language>
+			<language tag="fr-FR">fr-FR/plg_webservices_biemembership.sys.ini</language>
+    </languages>
+    <config>
+    </config>
+    <updateservers>
+        <server type="extension" priority="1" name="com_biemembership">https://www.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NDU0MzUtMjE1NDc5</server>
+    </updateservers>
+</extension>
